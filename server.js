@@ -146,22 +146,25 @@ app.get('/api/submissions/:id', async (req,res) => {
     }
 });
 
-app.get('/api/submissions/:id', async (req,res) => {
-    try {
-        const quizId = Number(req.params.id)
-
-        if (isNaN(quizId)) {
-            return res.status(400).json({ error: "Invalid quiz ID format" });
-        }
-
-        const Submission = getSubmissionModel(quizId);
-
-        const submissions = await Submission.find({});
-        res.json(submissions);
-    } catch (error) {
-        console.error("Error retrieving quiz:", error);
-        res.status(500).json({ error: "Internal server error" });
+app.get('/api/data/:id', async (req, res) => {
+  try {
+    const quizId = Number(req.params.id);
+    
+    if (isNaN(quizId)) {
+      return res.status(400).json({ error: "Invalid quiz ID format" });
     }
+
+    const quiz = await Quiz.findOne({ id: quizId });
+    
+    if (!quiz) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+
+    res.json(quiz);
+  } catch (error) {
+    console.error("Error retrieving quiz:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.post('/api/submit', async (req, res) => {
